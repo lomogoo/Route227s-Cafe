@@ -1,0 +1,571 @@
+/**
+ * Route 227s' Cafe - Layout Styles
+ * =================================
+ * アプリレイアウト、ナビゲーション、ページ構造
+ */
+
+/* ============================================
+   Base Reset & Defaults
+   ============================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--color-gray-900);
+  background: var(--color-gray-50);
+  min-height: 100vh;
+  min-height: 100dvh; /* iOS Safari対応 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   App Shell
+   ============================================ */
+.app {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  background: var(--color-white);
+}
+
+/* ============================================
+   Header
+   ============================================ */
+.header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height);
+  padding-top: var(--safe-area-top);
+  background: var(--color-white);
+  border-bottom: 1px solid var(--color-gray-200);
+  z-index: var(--z-sticky);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
+}
+
+.header__logo {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--color-gray-900);
+  text-decoration: none;
+}
+
+.header__logo span {
+  color: var(--color-primary);
+}
+
+.header__title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--color-gray-900);
+  text-align: center;
+}
+
+.header__action {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* ============================================
+   Main Content Area
+   ============================================ */
+.main {
+  flex: 1;
+  padding-bottom: calc(var(--nav-height) + var(--safe-area-bottom));
+  overflow-x: hidden;
+}
+
+.page {
+  display: none;
+  min-height: calc(100vh - var(--header-height) - var(--nav-height) - var(--safe-area-bottom));
+  min-height: calc(100dvh - var(--header-height) - var(--nav-height) - var(--safe-area-bottom));
+}
+
+.page.is-active {
+  display: block;
+}
+
+.page__content {
+  padding: var(--space-5);
+}
+
+.page__header {
+  padding: var(--space-6) var(--space-5) var(--space-4);
+}
+
+.page__title {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--color-gray-900);
+  margin: 0;
+}
+
+.page__subtitle {
+  font-size: var(--text-base);
+  color: var(--color-gray-500);
+  margin-top: var(--space-1);
+}
+
+/* ============================================
+   Bottom Navigation
+   ============================================ */
+.nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(var(--nav-height) + var(--safe-area-bottom));
+  padding-bottom: var(--safe-area-bottom);
+  background: var(--color-white);
+  border-top: 1px solid var(--color-gray-200);
+  z-index: var(--z-sticky);
+  display: flex;
+  justify-content: space-around;
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+}
+
+.nav__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  color: var(--color-gray-500);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+.nav__item:hover {
+  color: var(--color-gray-700);
+}
+
+.nav__item.is-active {
+  color: var(--color-primary);
+}
+
+.nav__icon {
+  width: 24px;
+  height: 24px;
+}
+
+.nav__label {
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+}
+
+/* ============================================
+   Sections
+   ============================================ */
+.section {
+  padding: var(--space-5);
+}
+
+.section + .section {
+  padding-top: 0;
+}
+
+.section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.section__title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--color-gray-900);
+  margin: 0;
+}
+
+.section__link {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+/* ============================================
+   Stat Cards (ダッシュボード用)
+   ============================================ */
+.stat-card {
+  background: var(--color-white);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-card);
+}
+
+.stat-card--highlight {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: var(--color-white);
+}
+
+.stat-card__label {
+  font-size: var(--text-sm);
+  color: var(--color-gray-500);
+  margin-bottom: var(--space-1);
+}
+
+.stat-card--highlight .stat-card__label {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.stat-card__value {
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
+  line-height: 1.2;
+}
+
+.stat-card__unit {
+  font-size: var(--text-lg);
+  font-weight: var(--font-normal);
+  margin-left: var(--space-1);
+}
+
+.stat-card__sub {
+  font-size: var(--text-sm);
+  color: var(--color-gray-500);
+  margin-top: var(--space-2);
+}
+
+.stat-card--highlight .stat-card__sub {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Stats Row */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+
+.stats-row--3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* ============================================
+   Tab Filters
+   ============================================ */
+.tab-filters {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-5);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tab-filters::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-filter {
+  flex-shrink: 0;
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-gray-600);
+  background: var(--color-gray-100);
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.tab-filter:hover {
+  background: var(--color-gray-200);
+}
+
+.tab-filter.is-active {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+/* ============================================
+   Scrollable Containers
+   ============================================ */
+.scroll-x {
+  display: flex;
+  gap: var(--space-4);
+  overflow-x: auto;
+  padding: var(--space-4) var(--space-5);
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scroll-x::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll-x > * {
+  flex-shrink: 0;
+  scroll-snap-align: start;
+}
+
+/* ============================================
+   Fullscreen Reel (縦スワイプ用)
+   ============================================ */
+.reel-container {
+  height: calc(100vh - var(--header-height) - var(--nav-height) - var(--safe-area-bottom));
+  height: calc(100dvh - var(--header-height) - var(--nav-height) - var(--safe-area-bottom));
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.reel-container::-webkit-scrollbar {
+  display: none;
+}
+
+.reel-item {
+  height: calc(100vh - var(--header-height) - var(--nav-height) - var(--safe-area-bottom));
+  height: calc(100dvh - var(--header-height) - var(--nav-height) - var(--safe-area-bottom));
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ============================================
+   Horizontal Pages (横スワイプ用)
+   ============================================ */
+.pages-container {
+  display: flex;
+  overflow-x: scroll;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.pages-container::-webkit-scrollbar {
+  display: none;
+}
+
+.page-slide {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+/* Page Indicator Dots */
+.page-dots {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: center;
+  padding: var(--space-3);
+}
+
+.page-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--color-gray-300);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-fast);
+}
+
+.page-dot.is-active {
+  width: 24px;
+  background: var(--color-primary);
+}
+
+/* ============================================
+   Map Container
+   ============================================ */
+.map-container {
+  position: relative;
+  height: 300px;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.map-container--fullscreen {
+  height: calc(100vh - var(--header-height) - var(--nav-height) - var(--safe-area-bottom) - 200px);
+  height: calc(100dvh - var(--header-height) - var(--nav-height) - var(--safe-area-bottom) - 200px);
+  min-height: 300px;
+  border-radius: 0;
+}
+
+.map-overlay {
+  position: absolute;
+  bottom: var(--space-4);
+  left: var(--space-4);
+  right: var(--space-4);
+  z-index: 1000;
+}
+
+/* ============================================
+   Pull to Refresh (簡易)
+   ============================================ */
+.ptr-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 0;
+  overflow: hidden;
+  transition: height var(--transition-base);
+}
+
+.ptr-indicator.is-active {
+  height: 60px;
+}
+
+/* ============================================
+   Dividers
+   ============================================ */
+.divider {
+  height: 1px;
+  background: var(--color-gray-200);
+  margin: var(--space-4) 0;
+}
+
+.divider--thick {
+  height: 8px;
+  background: var(--color-gray-100);
+  margin: 0;
+}
+
+/* ============================================
+   Offline Banner
+   ============================================ */
+.offline-banner {
+  position: fixed;
+  top: var(--safe-area-top);
+  left: 0;
+  right: 0;
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-gray-800);
+  color: var(--color-white);
+  text-align: center;
+  font-size: var(--text-sm);
+  z-index: var(--z-toast);
+  transform: translateY(-100%);
+  transition: transform var(--transition-base);
+}
+
+.offline-banner.is-active {
+  transform: translateY(0);
+}
+
+/* ============================================
+   Utility Classes
+   ============================================ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-primary {
+  color: var(--color-primary);
+}
+
+.text-muted {
+  color: var(--color-gray-500);
+}
+
+.text-success {
+  color: var(--color-success);
+}
+
+.text-error {
+  color: var(--color-error);
+}
+
+.font-bold {
+  font-weight: var(--font-bold);
+}
+
+.mt-auto {
+  margin-top: auto;
+}
+
+.mb-4 {
+  margin-bottom: var(--space-4);
+}
+
+.mb-6 {
+  margin-bottom: var(--space-6);
+}
+
+.gap-2 {
+  gap: var(--space-2);
+}
+
+.gap-4 {
+  gap: var(--space-4);
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.w-full {
+  width: 100%;
+}

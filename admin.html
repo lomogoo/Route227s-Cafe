@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FF6B35">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin - Route 227s' Cafe</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="/src/css/style.css">
+
+  <style>
+    .admin-header {
+      background: var(--color-gray-900);
+      color: var(--color-white);
+    }
+    .admin-header__logo {
+      color: var(--color-white);
+    }
+    .admin-header__logo span {
+      color: var(--color-primary);
+    }
+    .admin-nav {
+      display: flex;
+      gap: var(--space-2);
+      padding: var(--space-4);
+      background: var(--color-white);
+      border-bottom: 1px solid var(--color-gray-200);
+      overflow-x: auto;
+    }
+    .video-container {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    #qr-video {
+      width: 100%;
+      border-radius: var(--radius-lg);
+    }
+    .scan-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .scan-frame {
+      width: 200px;
+      height: 200px;
+      border: 3px solid var(--color-primary);
+      border-radius: var(--radius-lg);
+      animation: pulse 2s infinite;
+    }
+    .user-result {
+      padding: var(--space-4);
+      background: var(--color-gray-50);
+      border-radius: var(--radius-lg);
+      margin-top: var(--space-4);
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="app">
+    <!-- Header -->
+    <header class="header admin-header">
+      <a href="/admin.html" class="header__logo admin-header__logo">Route <span>227s'</span> Admin</a>
+      <button id="logout-btn" class="btn btn--ghost btn--sm" style="color:white">ログアウト</button>
+    </header>
+
+    <!-- Admin Navigation -->
+    <nav class="admin-nav">
+      <button class="tab-filter is-active" data-admin-tab="scan">QRスキャン</button>
+      <button class="tab-filter" data-admin-tab="schedule">スケジュール</button>
+      <button class="tab-filter" data-admin-tab="events">イベント</button>
+      <button class="tab-filter" data-admin-tab="articles">特集記事</button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main" style="padding-bottom:var(--space-6)">
+      <!-- Auth Required -->
+      <div id="admin-auth-required" class="page__content">
+        <div class="empty-state">
+          <svg class="empty-state__icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
+          </svg>
+          <h3 class="empty-state__title">スタッフログインが必要です</h3>
+          <p class="empty-state__description">スタッフアカウントでログインしてください</p>
+          <button id="admin-login-btn" class="btn btn--primary" style="margin-top:var(--space-6)">
+            ログイン
+          </button>
+        </div>
+      </div>
+
+      <!-- Admin Content -->
+      <div id="admin-content" class="hidden">
+        <!-- QR Scan Tab -->
+        <div id="tab-scan" class="page__content">
+          <div class="admin-section">
+            <h2 class="admin-section__title">会員QRスキャン</h2>
+
+            <div class="video-container">
+              <video id="qr-video" autoplay playsinline></video>
+              <div class="scan-overlay">
+                <div class="scan-frame"></div>
+              </div>
+            </div>
+
+            <div class="flex gap-2 justify-center" style="margin-top:var(--space-4)">
+              <button id="start-scan-btn" class="btn btn--primary">スキャン開始</button>
+              <button id="stop-scan-btn" class="btn btn--secondary hidden">停止</button>
+            </div>
+
+            <div id="scan-result" class="user-result hidden">
+              <h3 style="margin-bottom:var(--space-3)">ユーザー情報</h3>
+              <p><strong>名前:</strong> <span id="result-name">--</span></p>
+              <p><strong>現在スタンプ:</strong> <span id="result-stamps">--</span></p>
+              <p style="margin-top:var(--space-3)">
+                <strong>ユーザーID:</strong><br>
+                <code id="result-uid" style="font-size:var(--text-xs);word-break:break-all">--</code>
+              </p>
+
+              <div class="flex gap-2" style="margin-top:var(--space-4)">
+                <button id="award-stamp-btn" class="btn btn--primary flex-1">
+                  +1 スタンプ付与
+                </button>
+              </div>
+
+              <div class="flex gap-2" style="margin-top:var(--space-2)">
+                <button id="redeem-drink-btn" class="btn btn--outline flex-1">
+                  ドリンク交換 (-3)
+                </button>
+                <button id="redeem-curry-btn" class="btn btn--outline flex-1">
+                  カレー交換 (-6)
+                </button>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <h3 style="margin-bottom:var(--space-3)">手動入力</h3>
+            <form id="manual-uid-form" class="flex gap-2">
+              <input type="text" class="form-input" id="manual-uid" placeholder="ユーザーID">
+              <button type="submit" class="btn btn--secondary">検索</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Schedule Tab -->
+        <div id="tab-schedule" class="page__content hidden">
+          <div class="admin-section">
+            <h2 class="admin-section__title">出店スケジュール画像</h2>
+
+            <div class="form-group">
+              <label class="form-label">対象月</label>
+              <input type="month" class="form-input" id="schedule-month-input">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">画像ファイル</label>
+              <input type="file" class="form-input" id="schedule-image-input" accept="image/*">
+            </div>
+
+            <div id="schedule-preview" class="hidden" style="margin:var(--space-4) 0">
+              <img id="schedule-preview-img" src="" alt="プレビュー" style="max-width:100%;border-radius:var(--radius-lg)">
+            </div>
+
+            <button id="upload-schedule-btn" class="btn btn--primary btn--block">
+              アップロード
+            </button>
+
+            <div class="divider"></div>
+
+            <h3 style="margin-bottom:var(--space-3)">登録済みスケジュール</h3>
+            <div id="schedule-list">
+              <p class="text-muted">読み込み中...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Events Tab -->
+        <div id="tab-events" class="page__content hidden">
+          <div class="admin-section">
+            <h2 class="admin-section__title">イベント管理</h2>
+
+            <form id="event-form">
+              <div class="form-group">
+                <label class="form-label">日付 *</label>
+                <input type="date" class="form-input" id="event-date" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">タイトル *</label>
+                <input type="text" class="form-input" id="event-title" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">説明</label>
+                <textarea class="form-textarea" id="event-description"></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">場所</label>
+                <input type="text" class="form-input" id="event-location">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">URL</label>
+                <input type="url" class="form-input" id="event-url">
+              </div>
+
+              <button type="submit" class="btn btn--primary btn--block">
+                イベント登録
+              </button>
+            </form>
+
+            <div class="divider"></div>
+
+            <h3 style="margin-bottom:var(--space-3)">登録済みイベント</h3>
+            <div id="events-list">
+              <p class="text-muted">読み込み中...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Articles Tab -->
+        <div id="tab-articles" class="page__content hidden">
+          <div class="admin-section">
+            <h2 class="admin-section__title">特集記事管理</h2>
+
+            <form id="article-form">
+              <div class="form-group">
+                <label class="form-label">タイトル *</label>
+                <input type="text" class="form-input" id="article-title" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">カテゴリ</label>
+                <input type="text" class="form-input" id="article-category" placeholder="例：食">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">サマリー</label>
+                <textarea class="form-textarea" id="article-summary" rows="2"></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">画像URL</label>
+                <input type="url" class="form-input" id="article-image">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">タグ（カンマ区切り）</label>
+                <input type="text" class="form-input" id="article-tags" placeholder="例：京都, グルメ, カフェ">
+              </div>
+
+              <div class="form-group">
+                <label class="pill pill--clickable">
+                  <input type="checkbox" id="article-published" style="margin-right:var(--space-2)">
+                  公開する
+                </label>
+              </div>
+
+              <button type="submit" class="btn btn--primary btn--block">
+                記事登録
+              </button>
+            </form>
+
+            <div class="divider"></div>
+
+            <h3 style="margin-bottom:var(--space-3)">登録済み記事</h3>
+            <div id="articles-list">
+              <p class="text-muted">読み込み中...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Auth Modal -->
+  <div id="auth-modal-backdrop" class="modal-backdrop"></div>
+  <div id="auth-modal" class="modal">
+    <div class="modal__handle"></div>
+    <h2 class="modal__title">スタッフログイン</h2>
+    <form id="auth-form">
+      <div class="form-group">
+        <label class="form-label">メールアドレス</label>
+        <input type="email" class="form-input" id="auth-email" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">パスワード</label>
+        <input type="password" class="form-input" id="auth-password" required>
+      </div>
+      <button type="submit" class="btn btn--primary btn--block">ログイン</button>
+    </form>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script type="module" src="/src/js/admin.js"></script>
+</body>
+</html>
