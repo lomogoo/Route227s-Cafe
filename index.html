@@ -7,8 +7,9 @@
   <meta name="description" content="Route 227s' Cafe キッチンカー - スタンプカード、特集、ローカル掲示板">
 
   <!-- PWA -->
-  <link rel="manifest" href="/manifest.json">
-  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
@@ -22,7 +23,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
 
   <!-- App CSS -->
-  <link rel="stylesheet" href="/src/css/style.css">
+  <link rel="stylesheet" href="src/css/style.css">
 </head>
 <body>
   <div id="app" class="app">
@@ -33,7 +34,7 @@
 
     <!-- Header -->
     <header class="header">
-      <a href="/" class="header__logo">Route <span>227s'</span> Cafe</a>
+      <a href="./" class="header__logo">Route <span>227s'</span> Cafe</a>
       <div class="header__action">
         <button id="qr-btn" class="btn btn--icon btn--ghost" aria-label="会員QR">
           <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
@@ -743,6 +744,6 @@
 
   <!-- Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <script type="module" src="/src/js/main.js"></script>
+  <script type="module" src="src/js/main.js"></script>
 </body>
 </html>
