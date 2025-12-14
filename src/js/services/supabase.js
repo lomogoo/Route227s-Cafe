@@ -5,13 +5,15 @@
  */
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { CONFIG, isConfigured } from '../config.js';
 
-// 環境変数から取得（Viteの場合）
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'YOUR_SUPABASE_URL';
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'YOUR_SUPABASE_ANON_KEY';
+// 設定チェック
+if (!isConfigured()) {
+  console.warn('⚠️ Supabaseが設定されていません。src/js/config.js を編集してください。');
+}
 
 // Supabase Client
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+export const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
