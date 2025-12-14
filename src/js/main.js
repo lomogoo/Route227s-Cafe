@@ -78,6 +78,7 @@ import { modal, confirm } from './components/modal.js';
 // ============================================
 // Application State
 // ============================================
+const assetPath = (path) => new URL(path, import.meta.env.BASE_URL).href;
 const state = {
   user: null,
   profile: null,
@@ -355,7 +356,7 @@ async function loadWeeklyRecommend() {
   try {
     const article = await getRandomArticle();
     if (article) {
-      $('#weekly-img').src = article.image_url || '/icons/icon-192.png';
+      $('#weekly-img').src = article.image_url || assetPath('icons/icon-192.png');
       $('#weekly-label').textContent = article.category || '特集';
       $('#weekly-title').textContent = article.title;
       $('#weekly-desc').textContent = article.summary || '';
@@ -547,7 +548,7 @@ function createFeatureCard(article, index) {
   item.dataset.articleId = article.id;
 
   item.innerHTML = `
-    <img class="feature-card__image" src="${article.image_url || '/icons/icon-512.png'}" alt="${article.title}">
+    <img class="feature-card__image" src="${article.image_url || assetPath('icons/icon-512.png')}" alt="${article.title}">
     <div class="feature-card__overlay"></div>
     <div class="feature-card__content">
       <div class="feature-card__tags">
