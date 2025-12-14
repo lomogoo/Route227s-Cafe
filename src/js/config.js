@@ -10,10 +10,10 @@
 
 export const CONFIG = {
   // Supabase Project URL (例: https://xxxxx.supabase.co)
-  SUPABASE_URL: 'YOUR_SUPABASE_URL',
+  SUPABASE_URL: 'https://tfkzsbwhvhgxbnnfwtou.supabase.co',
 
   // Supabase Anon Key (公開キー - クライアント側で使用可能)
-  SUPABASE_ANON_KEY: 'YOUR_SUPABASE_ANON_KEY',
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRma3pzYndodmhneGJubmZ3dG91Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU3MjA5MTksImV4cCI6MjA4MTI5NjkxOX0.R39CQFyCPNbdX2GKBmjXriDUcR6D7EB-vLDFsINY96w',
 
   // Edge Functions URL (通常は SUPABASE_URL + /functions/v1)
   get FUNCTIONS_URL() {
