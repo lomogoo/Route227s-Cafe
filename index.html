@@ -366,10 +366,22 @@
            Tab C: Route227 特集
            ============================================ -->
       <div id="page-feature" class="page" data-page="feature">
-        <!-- Reel Container -->
-        <div id="feature-reel" class="reel-container">
+        <div class="page__header">
+          <h1 class="page__title">特集・ニュース</h1>
+          <p class="page__subtitle">仙台・宮城・東北の最新情報</p>
+        </div>
+
+        <!-- Tab Filters -->
+        <div class="tab-filters">
+          <button class="tab-filter is-active" data-feature-tab="all">すべて</button>
+          <button class="tab-filter" data-feature-tab="news">ニュース</button>
+          <button class="tab-filter" data-feature-tab="manual">特集記事</button>
+        </div>
+
+        <!-- Articles Grid Container -->
+        <div id="feature-grid" class="articles-grid">
           <!-- Loading -->
-          <div id="feature-loading" class="reel-item flex items-center justify-center">
+          <div id="feature-loading" class="loading-container">
             <div class="spinner"></div>
           </div>
           <!-- Articles populated dynamically -->

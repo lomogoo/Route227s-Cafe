@@ -524,15 +524,17 @@ async function loadTodayEvents() {
 }
 
 // ============================================
-// Feature Page (縦型リール)
+// Feature Page (Mobbin-inspired Grid Layout)
 // ============================================
+let currentFeatureFilter = 'all';
+
 async function loadFeaturePage() {
-  const reel = $('#feature-reel');
+  const grid = $('#feature-grid');
   const loading = $('#feature-loading');
   const empty = $('#feature-empty');
 
   try {
-    const articles = await getPublishedArticles(20);
+    const articles = await getPublishedArticles(50);
     state.articles = articles;
 
     if (articles.length === 0) {
@@ -541,14 +543,14 @@ async function loadFeaturePage() {
       return;
     }
 
-    // リールをクリア
-    reel.innerHTML = '';
+    // グリッドをクリア
+    grid.innerHTML = '';
 
-    // 記事カードを追加
-    articles.forEach((article, index) => {
-      const item = createFeatureCard(article, index);
-      reel.appendChild(item);
-    });
+    // フィルタリングされた記事を表示
+    renderFilteredArticles();
+
+    // タブフィルターのイベントリスナーを設定
+    setupFeatureFilters();
 
   } catch (error) {
     console.error('Error loading features:', error);
@@ -557,14 +559,77 @@ async function loadFeaturePage() {
   }
 }
 
-function createFeatureCard(article, index) {
-  const item = document.createElement('div');
-  item.className = 'reel-item feature-card';
-  item.dataset.articleId = article.id;
+function setupFeatureFilters() {
+  const filters = document.querySelectorAll('[data-feature-tab]');
+  filters.forEach(filter => {
+    filter.addEventListener('click', (e) => {
+      const tab = e.currentTarget.dataset.featureTab;
 
-  item.innerHTML = `
-    <img class="feature-card__image" src="${article.image_url || assetPath('icons/icon-512.png')}" alt="${article.title}">
-    <div class="feature-card__overlay"></div>
+      // アクティブなタブを更新
+      filters.forEach(f => f.classList.remove('is-active'));
+      e.currentTarget.classList.add('is-active');
+
+      // フィルターを適用
+      currentFeatureFilter = tab;
+      renderFilteredArticles();
+    });
+  });
+}
+
+function renderFilteredArticles() {
+  const grid = $('#feature-grid');
+  grid.innerHTML = '';
+
+  let filteredArticles = state.articles;
+
+  // フィルターを適用
+  if (currentFeatureFilter === 'news') {
+    filteredArticles = state.articles.filter(a => a.is_auto_scraped);
+  } else if (currentFeatureFilter === 'manual') {
+    filteredArticles = state.articles.filter(a => !a.is_auto_scraped);
+  }
+
+  // 記事カードを追加
+  filteredArticles.forEach((article, index) => {
+    const card = createFeatureCard(article, index);
+    grid.appendChild(card);
+  });
+
+  // 空の状態を表示
+  const empty = $('#feature-empty');
+  if (filteredArticles.length === 0) {
+    show(empty);
+  } else {
+    hide(empty);
+  }
+}
+
+function createFeatureCard(article, index) {
+  const card = document.createElement('div');
+  card.className = 'feature-card';
+  card.dataset.articleId = article.id;
+
+  // ソースバッジのテキスト
+  const sourceText = article.is_auto_scraped
+    ? (article.author || 'ニュース')
+    : '特集';
+
+  // 日付のフォーマット
+  const date = article.published_date
+    ? new Date(article.published_date).toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' })
+    : new Date(article.created_at).toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' });
+
+  card.innerHTML = `
+    <div class="feature-card__image-container">
+      <img class="feature-card__image" src="${article.image_url || assetPath('icons/icon-512.png')}" alt="${article.title}">
+      <div class="feature-card__source-badge">
+        ${article.is_auto_scraped ?
+          '<svg class="feature-card__source-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>' :
+          '<svg class="feature-card__source-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>'
+        }
+        ${sourceText}
+      </div>
+    </div>
     <div class="feature-card__content">
       <div class="feature-card__tags">
         ${article.category ? `<span class="feature-card__tag">${article.category}</span>` : ''}
@@ -572,42 +637,51 @@ function createFeatureCard(article, index) {
       </div>
       <h2 class="feature-card__title">${article.title}</h2>
       <p class="feature-card__summary">${article.summary || ''}</p>
-      <div class="feature-card__actions">
-        <button class="btn btn--primary read-article-btn" data-id="${article.id}">読む</button>
-        <button class="btn btn--outline bookmark-btn" data-id="${article.id}">
-          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z"/>
+      <div class="feature-card__meta">
+        <div class="feature-card__author">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
-        </button>
+          <span class="feature-card__date">${date}</span>
+        </div>
+        <div class="feature-card__actions">
+          <button class="feature-card__bookmark-btn bookmark-btn" data-id="${article.id}">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z"/>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   `;
 
-  // 読むボタン
-  item.querySelector('.read-article-btn').addEventListener('click', () => {
-    openArticleDetail(article.id);
+  // カード全体をクリックで記事を開く
+  card.addEventListener('click', (e) => {
+    // ブックマークボタンをクリックした場合は記事を開かない
+    if (e.target.closest('.bookmark-btn')) return;
+    openArticleDetail(article.id, article.source_url);
   });
 
   // ブックマークボタン
-  item.querySelector('.bookmark-btn').addEventListener('click', async (e) => {
+  const bookmarkBtn = card.querySelector('.bookmark-btn');
+  bookmarkBtn.addEventListener('click', async (e) => {
+    e.stopPropagation();
+
     if (!state.user) {
       toast.info('ブックマークにはログインが必要です');
       modal.open('auth-modal');
       return;
     }
 
-    const btn = e.currentTarget;
     try {
       const bookmarked = await isBookmarked(state.user.id, article.id);
       if (bookmarked) {
         await removeBookmark(state.user.id, article.id);
-        btn.classList.remove('btn--primary');
-        btn.classList.add('btn--outline');
+        bookmarkBtn.classList.remove('is-bookmarked');
         toast.success('ブックマークを解除しました');
       } else {
         await addBookmark(state.user.id, article.id);
-        btn.classList.add('btn--primary');
-        btn.classList.remove('btn--outline');
+        bookmarkBtn.classList.add('is-bookmarked');
         toast.success('ブックマークしました');
       }
     } catch (error) {
@@ -616,11 +690,26 @@ function createFeatureCard(article, index) {
     }
   });
 
-  return item;
+  // 既にブックマーク済みかチェック
+  if (state.user) {
+    isBookmarked(state.user.id, article.id).then(bookmarked => {
+      if (bookmarked) {
+        bookmarkBtn.classList.add('is-bookmarked');
+      }
+    });
+  }
+
+  return card;
 }
 
-async function openArticleDetail(articleId) {
-  // TODO: 記事詳細モーダルまたは横スワイプページを実装
+async function openArticleDetail(articleId, sourceUrl) {
+  // ニュース記事（外部ソース）の場合は外部リンクを開く
+  if (sourceUrl) {
+    window.open(sourceUrl, '_blank', 'noopener,noreferrer');
+    return;
+  }
+
+  // TODO: 手動作成記事の詳細モーダルまたは横スワイプページを実装
   console.log('Open article:', articleId);
   toast.info('記事詳細は準備中です');
 }
