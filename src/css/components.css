@@ -744,3 +744,30 @@
 .map-marker--disputed {
   background: var(--color-disputed);
 }
+
+/* 現在地マーカー */
+.map-marker-current-location {
+  background: transparent;
+  border: none;
+}
+
+.current-location-dot {
+  width: 20px;
+  height: 20px;
+  background: #FF6B35;
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.4);
+  animation: pulse-location 2s infinite;
+}
+
+@keyframes pulse-location {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}

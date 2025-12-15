@@ -675,10 +675,22 @@ function initBoardMap() {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(state.boardMap);
 
-  // 現在地を取得
+  // 現在地を取得して表示
   getCurrentPosition()
     .then(pos => {
       state.boardMap.setView([pos.lat, pos.lng], 14);
+
+      // 現在地マーカー（オレンジドット）を追加
+      const currentLocationIcon = L.divIcon({
+        className: 'map-marker-current-location',
+        html: '<div class="current-location-dot"></div>',
+        iconSize: [20, 20],
+        iconAnchor: [10, 10]
+      });
+
+      L.marker([pos.lat, pos.lng], { icon: currentLocationIcon })
+        .addTo(state.boardMap)
+        .bindPopup('現在地');
     })
     .catch(err => {
       console.log('Could not get current position:', err);
@@ -1088,9 +1100,25 @@ function setupModals() {
   let isSignUp = false;
   $('#toggle-auth-mode')?.addEventListener('click', () => {
     isSignUp = !isSignUp;
+    const nicknameGroup = $('#auth-nickname-group');
+    const passwordConfirmGroup = $('#auth-password-confirm-group');
+
     $('#auth-modal-title').textContent = isSignUp ? '新規登録' : 'ログイン';
     $('#auth-submit-btn').textContent = isSignUp ? '登録' : 'ログイン';
     $('#toggle-auth-mode').textContent = isSignUp ? 'ログインはこちら' : '新規登録はこちら';
+
+    // 新規登録時のみ表示
+    if (isSignUp) {
+      nicknameGroup?.classList.remove('hidden');
+      passwordConfirmGroup?.classList.remove('hidden');
+      $('#auth-nickname').required = true;
+      $('#auth-password-confirm').required = true;
+    } else {
+      nicknameGroup?.classList.add('hidden');
+      passwordConfirmGroup?.classList.add('hidden');
+      $('#auth-nickname').required = false;
+      $('#auth-password-confirm').required = false;
+    }
   });
 
   // マジックリンク
@@ -1234,25 +1262,86 @@ function setupForms() {
   $('#auth-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const email = $('#auth-email').value;
+    const email = $('#auth-email').value.trim();
     const password = $('#auth-password').value;
+    const nickname = $('#auth-nickname').value.trim();
+    const passwordConfirm = $('#auth-password-confirm').value;
     const isSignUpMode = $('#auth-modal-title').textContent === '新規登録';
 
+    // バリデーション
     if (!isValidEmail(email)) {
       toast.error('有効なメールアドレスを入力してください');
       return;
     }
 
+    if (!password || password.length < 6) {
+      toast.error('パスワードは6文字以上で入力してください');
+      return;
+    }
+
+    if (isSignUpMode) {
+      if (!nickname) {
+        toast.error('ニックネームを入力してください');
+        return;
+      }
+
+      if (password !== passwordConfirm) {
+        toast.error('パスワードが一致しません');
+        return;
+      }
+    }
+
+    // 処理中ビューに切り替え
+    const formView = $('#auth-form-view');
+    const processingView = $('#auth-processing-view');
+    const processingTitle = $('#auth-processing-title');
+    const processingMessage = $('#auth-processing-message');
+
+    formView?.classList.add('hidden');
+    processingView?.classList.remove('hidden');
+
     try {
       if (isSignUpMode) {
-        await signUp(email, password, 'ユーザー');
-        toast.success('確認メールを送信しました');
+        processingTitle.textContent = '登録処理中...';
+        processingMessage.textContent = 'アカウントを作成しています';
+
+        await signUp(email, password, nickname || 'ユーザー');
+
+        processingTitle.textContent = '登録完了！';
+        processingMessage.textContent = '確認メールを送信しました。メールをご確認ください。';
+
+        // 3秒後にモーダルを閉じる
+        setTimeout(() => {
+          modal.close('auth-modal');
+          formView?.classList.remove('hidden');
+          processingView?.classList.add('hidden');
+          $('#auth-form').reset();
+        }, 3000);
       } else {
+        processingTitle.textContent = 'ログイン中...';
+        processingMessage.textContent = '認証情報を確認しています';
+
         await signIn(email, password);
+        // ログイン成功時はonAuthStateChangeで処理される
       }
     } catch (error) {
       console.error('Auth error:', error);
-      toast.error(error.message || '認証に失敗しました');
+
+      // エラー時はフォームに戻す
+      formView?.classList.remove('hidden');
+      processingView?.classList.add('hidden');
+
+      // エラーメッセージを日本語化
+      let errorMessage = '認証に失敗しました';
+      if (error.message?.includes('Invalid login credentials')) {
+        errorMessage = 'メールアドレスまたはパスワードが正しくありません';
+      } else if (error.message?.includes('User already registered')) {
+        errorMessage = 'このメールアドレスは既に登録されています';
+      } else if (error.message?.includes('Email not confirmed')) {
+        errorMessage = 'メールアドレスが確認されていません。確認メールをご確認ください';
+      }
+
+      toast.error(errorMessage);
     }
   });
 
