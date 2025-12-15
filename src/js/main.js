@@ -148,17 +148,32 @@ function setupOfflineDetection() {
 // Auth Listener
 // ============================================
 function setupAuthListener() {
+  let previousUserId = null;
+
   onAuthStateChange(async (event, session) => {
     console.log('Auth state changed:', event);
 
-    if (event === 'SIGNED_IN' && session?.user) {
+    // INITIAL_SESSION, TOKEN_REFRESHED, USER_UPDATED などのイベントは通知しない
+    const shouldNotify = event === 'SIGNED_IN' || event === 'SIGNED_OUT';
+    const currentUserId = session?.user?.id || null;
+
+    // ユーザーIDが実際に変わった場合のみ処理
+    const userChanged = previousUserId !== currentUserId;
+
+    if (event === 'SIGNED_IN' && session?.user && userChanged) {
       await handleUserLogin(session.user);
       modal.close('auth-modal');
       toast.success('ログインしました');
       await loadPage(state.currentPage);
-    } else if (event === 'SIGNED_OUT') {
+      previousUserId = currentUserId;
+    } else if (event === 'SIGNED_OUT' && userChanged) {
       handleUserLogout();
       await loadPage(state.currentPage);
+      previousUserId = null;
+    } else if (event === 'SIGNED_IN' && session?.user && !userChanged) {
+      // セッション復元時（ユーザーは変わっていない）
+      await handleUserLogin(session.user);
+      // トーストは表示しない
     }
   });
 }
@@ -1305,18 +1320,23 @@ function setupForms() {
         processingTitle.textContent = '登録処理中...';
         processingMessage.textContent = 'アカウントを作成しています';
 
-        await signUp(email, password, nickname || 'ユーザー');
+        const result = await signUp(email, password, nickname || 'ユーザー');
+
+        // メール確認が必要な場合、自動ログインされたセッションをクリアする
+        if (result?.session) {
+          await signOut();
+        }
 
         processingTitle.textContent = '登録完了！';
         processingMessage.textContent = '確認メールを送信しました。メールをご確認ください。';
 
-        // 3秒後にモーダルを閉じる
+        // 5秒後にモーダルを閉じる
         setTimeout(() => {
           modal.close('auth-modal');
           formView?.classList.remove('hidden');
           processingView?.classList.add('hidden');
           $('#auth-form').reset();
-        }, 3000);
+        }, 5000);
       } else {
         processingTitle.textContent = 'ログイン中...';
         processingMessage.textContent = '認証情報を確認しています';
