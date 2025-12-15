@@ -10,7 +10,7 @@ INSERT INTO articles (id, category, title, summary, image_url, tags, is_publishe
 VALUES (
     '11111111-1111-1111-1111-111111111111',
     'フードロス',
-    'Route 227s' Cafeのフードロス削減への挑戦',
+    'Route 227s'' Cafeのフードロス削減への挑戦',
     '規格外野菜を使った美味しいカレーで、環境問題に取り組む私たちの活動をご紹介します。',
     'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="400"%3E%3Crect width="800" height="400" fill="%234CAF50"/%3E%3Ctext x="50%25" y="50%25" font-size="48" fill="white" text-anchor="middle" dominant-baseline="middle"%3EFood Loss Reduction%3C/text%3E%3C/svg%3E',
     ARRAY['フードロス', '環境', '規格外野菜'],
