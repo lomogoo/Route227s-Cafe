@@ -117,6 +117,11 @@ body {
   padding: var(--space-6) var(--space-5) var(--space-4);
 }
 
+/* ローカル掲示板のヘッダーは余白を詰める */
+#page-board .page__header {
+  padding-bottom: 0;
+}
+
 .page__title {
   font-size: var(--text-2xl);
   font-weight: var(--font-bold);
