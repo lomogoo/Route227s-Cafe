@@ -48,7 +48,7 @@ body {
 }
 
 /* ============================================
-   Header
+   Header - Tripadvisor風ミニマルヘッダー
    ============================================ */
 .header {
   position: sticky;
@@ -58,36 +58,69 @@ body {
   height: var(--header-height);
   padding-top: var(--safe-area-top);
   background: var(--color-white);
-  border-bottom: 1px solid var(--color-gray-200);
   z-index: var(--z-sticky);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding-left: var(--space-4);
   padding-right: var(--space-4);
+  border-bottom: none;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
 }
 
 .header__logo {
-  font-size: var(--text-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-md);
   font-weight: var(--font-bold);
   color: var(--color-gray-900);
   text-decoration: none;
+  letter-spacing: var(--tracking-tight);
 }
 
 .header__logo span {
   color: var(--color-primary);
 }
 
+.header__logo::before {
+  content: '';
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  background: var(--color-primary);
+  border-radius: var(--radius-md);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z'/%3E%3C/svg%3E") center / contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
 .header__title {
-  font-size: var(--text-lg);
-  font-weight: var(--font-bold);
+  font-size: var(--text-md);
+  font-weight: var(--font-semibold);
   color: var(--color-gray-900);
   text-align: center;
+  letter-spacing: var(--tracking-tight);
 }
 
 .header__action {
   display: flex;
-  gap: var(--space-2);
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.header__action .btn--icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  color: var(--color-gray-700);
+}
+
+.header__action .btn--icon:hover {
+  background: var(--color-gray-100);
+}
+
+.header__action .btn--icon:active {
+  background: var(--color-gray-200);
 }
 
 /* ============================================
@@ -136,7 +169,7 @@ body {
 }
 
 /* ============================================
-   Bottom Navigation
+   Bottom Navigation - Tripadvisor風モダンナビ
    ============================================ */
 .nav {
   position: fixed;
@@ -146,7 +179,8 @@ body {
   height: calc(var(--nav-height) + var(--safe-area-bottom));
   padding-bottom: var(--safe-area-bottom);
   background: var(--color-white);
-  border-top: 1px solid var(--color-gray-200);
+  border-top: none;
+  box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05), 0 -4px 12px rgba(0, 0, 0, 0.03);
   z-index: var(--z-sticky);
   display: flex;
   justify-content: space-around;
@@ -160,65 +194,117 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-1);
-  padding: var(--space-2);
+  gap: 2px;
+  padding: var(--space-2) var(--space-1);
   color: var(--color-gray-500);
   text-decoration: none;
-  transition: color var(--transition-fast);
+  transition: all var(--transition-fast);
   -webkit-tap-highlight-color: transparent;
   cursor: pointer;
   background: none;
   border: none;
+  position: relative;
+}
+
+.nav__item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 32px;
+  height: 2px;
+  background: var(--color-primary);
+  border-radius: 0 0 var(--radius-full) var(--radius-full);
+  transition: transform var(--transition-base);
 }
 
 .nav__item:hover {
   color: var(--color-gray-700);
 }
 
+.nav__item:active {
+  transform: scale(0.95);
+}
+
 .nav__item.is-active {
-  color: var(--color-primary);
+  color: var(--color-gray-900);
+}
+
+.nav__item.is-active::before {
+  transform: translateX(-50%) scaleX(1);
 }
 
 .nav__icon {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
+  stroke-width: 1.75;
+  transition: transform var(--transition-fast);
+}
+
+.nav__item.is-active .nav__icon {
+  stroke-width: 2.25;
 }
 
 .nav__label {
-  font-size: var(--text-xs);
+  font-size: var(--text-2xs);
   font-weight: var(--font-medium);
+  letter-spacing: 0.01em;
+}
+
+.nav__item.is-active .nav__label {
+  font-weight: var(--font-semibold);
 }
 
 /* ============================================
-   Sections
+   Sections - モダンセクションスタイル
    ============================================ */
 .section {
-  padding: var(--space-5);
+  padding: var(--space-4);
 }
 
 .section + .section {
-  padding-top: 0;
+  padding-top: var(--space-2);
 }
 
 .section__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-3);
 }
 
 .section__title {
-  font-size: var(--text-lg);
+  font-size: var(--text-base);
   font-weight: var(--font-bold);
   color: var(--color-gray-900);
   margin: 0;
+  letter-spacing: var(--tracking-tight);
+}
+
+.section__title--lg {
+  font-size: var(--text-lg);
 }
 
 .section__link {
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
-  color: var(--color-primary);
+  color: var(--color-gray-600);
   text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  transition: color var(--transition-fast);
+}
+
+.section__link:hover {
+  color: var(--color-gray-900);
+}
+
+.section__link::after {
+  content: '›';
+  font-size: var(--text-lg);
+  line-height: 1;
 }
 
 /* ============================================
@@ -227,45 +313,55 @@ body {
 .stat-card {
   background: var(--color-white);
   border-radius: var(--radius-xl);
-  padding: var(--space-5);
-  box-shadow: var(--shadow-card);
+  padding: var(--space-4);
+  border: 1px solid var(--color-gray-200);
 }
 
 .stat-card--highlight {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  background: var(--color-gray-900);
   color: var(--color-white);
+  border-color: var(--color-gray-900);
 }
 
 .stat-card__label {
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   color: var(--color-gray-500);
   margin-bottom: var(--space-1);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-weight: var(--font-medium);
 }
 
 .stat-card--highlight .stat-card__label {
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .stat-card__value {
-  font-size: var(--text-3xl);
+  font-size: var(--text-2xl);
   font-weight: var(--font-bold);
   line-height: 1.2;
+  letter-spacing: var(--tracking-tight);
 }
 
 .stat-card__unit {
-  font-size: var(--text-lg);
+  font-size: var(--text-sm);
   font-weight: var(--font-normal);
-  margin-left: var(--space-1);
+  margin-left: 2px;
+  color: var(--color-gray-500);
+}
+
+.stat-card--highlight .stat-card__unit {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .stat-card__sub {
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   color: var(--color-gray-500);
-  margin-top: var(--space-2);
+  margin-top: var(--space-1);
 }
 
 .stat-card--highlight .stat-card__sub {
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 /* Stats Row */
@@ -280,15 +376,16 @@ body {
 }
 
 /* ============================================
-   Tab Filters
+   Tab Filters - Tripadvisor風ピルフィルター
    ============================================ */
 .tab-filters {
   display: flex;
   gap: var(--space-2);
-  padding: var(--space-4) var(--space-5);
+  padding: var(--space-3) var(--space-4);
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  background: var(--color-white);
 }
 
 .tab-filters::-webkit-scrollbar {
@@ -297,12 +394,15 @@ body {
 
 .tab-filter {
   flex-shrink: 0;
-  padding: var(--space-2) var(--space-4);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  padding: var(--space-2) var(--space-3-5);
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
-  color: var(--color-gray-600);
-  background: var(--color-gray-100);
-  border: none;
+  color: var(--color-gray-800);
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-300);
   border-radius: var(--radius-full);
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -310,12 +410,80 @@ body {
 }
 
 .tab-filter:hover {
-  background: var(--color-gray-200);
+  border-color: var(--color-gray-400);
+  background: var(--color-gray-50);
+}
+
+.tab-filter:active {
+  transform: scale(0.97);
 }
 
 .tab-filter.is-active {
+  background: var(--color-gray-900);
+  color: var(--color-white);
+  border-color: var(--color-gray-900);
+}
+
+/* Filter with icon */
+.tab-filter--icon {
+  padding-left: var(--space-3);
+}
+
+.tab-filter__icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Special filter styles (like Map, Date picker) */
+.tab-filter--map {
   background: var(--color-primary);
   color: var(--color-white);
+  border-color: var(--color-primary);
+}
+
+.tab-filter--map:hover {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+/* Tripadvisor style underline tabs */
+.tab-nav {
+  display: flex;
+  border-bottom: 1px solid var(--color-gray-200);
+  background: var(--color-white);
+  padding: 0 var(--space-4);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tab-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-nav__item {
+  flex-shrink: 0;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-gray-600);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  margin-bottom: -1px;
+}
+
+.tab-nav__item:hover {
+  color: var(--color-gray-900);
+}
+
+.tab-nav__item.is-active {
+  color: var(--color-gray-900);
+  border-bottom-color: var(--color-gray-900);
+  font-weight: var(--font-semibold);
 }
 
 /* ============================================
