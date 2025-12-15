@@ -47,7 +47,8 @@ export async function signUp(email, password, displayName) {
     email,
     password,
     options: {
-      data: { display_name: displayName }
+      data: { display_name: displayName },
+      emailRedirectTo: `${window.location.origin}${window.location.pathname}`
     }
   });
 
